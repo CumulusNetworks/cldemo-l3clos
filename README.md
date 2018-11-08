@@ -1,18 +1,15 @@
 Request a "Blank Workbench" on [Cumulus in the Cloud](https://cumulusnetworks.com/try-for-free/). When you receive notice that it is provisioned, connect to the *oob-mgmt-server*
 
 Once connected run
-`git clone -b citc https://github.com/jubetz/cldemo-l3clos`
+`git clone -b citc https://github.com/CumulusNetworks/cldemo-l3clos`
 
 This will set the groundwork to copy the rest of the demo to your workbench.
 
 Next
-`cd cldemo-netq`
+`cd cldemo-l3clos`
 `ansible-playbook setup.yml`
 
-After Ansible finishes two new directories are created:
-[evpn](https://github.com/CumulusNetworks/cldemo-netq/blob/master/README.md#evpn-demo)
-[docker](https://github.com/CumulusNetworks/cldemo-netq/blob/master/README.md#docker-swarm--routing-on-the-host-demo)
+After Ansible finishes a new directory gets created called, l3-clos.
 
-You can access either directory and follow the demo instructions.
+Follow the instructions "To Provision This Demo" back on the README.md on the master branch to complete the provisioning. 
 
-To switch between demos, please _reprovision_ your Cumulus in the Cloud instance.
