@@ -1,4 +1,56 @@
 ---
+- hosts: servers
+  become: yes
+  tasks:
+    - name: Copy Interface Config
+      copy:
+        src: configurations/{{ansible_hostname}}/interfaces
+        dest: /etc/network/interfaces
+      register: reboot
+
+    # Ping script is so servers generate traffic to populate MAC tables
+    - name: Configure Server01 Ping Cronjob
+      cron:
+        name: "server ping"
+        job: "ping -c 1 10.1.3.103"
+      become: yes
+      become_user: cumulus
+      when: inventory_hostname == "server01"
+
+    - name: Configure Server02 Ping Cronjob
+      cron:
+        name: "server ping"
+        job: "ping -c 1 10.2.4.104"
+      become: yes
+      become_user: cumulus
+      when: inventory_hostname == "server02"
+
+    - name: Correct LLDP Settings
+      lineinfile:
+        dest: /etc/lldpd.d/port_info.conf
+        line: "configure lldp portidsubtype ifname"
+        create: yes
+      notify: restart LLDP
+
+    - name: Apply LLDP Settings
+      meta: flush_handlers
+
+    - name: Restart Rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+      when: citc is undefined
+
+    - name: reboot
+      reboot:
+        pre_reboot_delay: 60
+
+  handlers:
+    - name: restart LLDP
+      service:
+        name: lldpd
+        state: restarted
+
 - hosts: network
   become: yes
   pre_tasks:
@@ -7,24 +59,18 @@
     - name: Verify Minimum Software Version
       assert:
         that: "{{ansible_lsb.release is version_compare('3.5', '>=') }}"
-        msg: "Cumulus Linux version must be 3.5 or later. Version {{ansible_lsb.release}} detected"
+        msg: >
+          "Cumulus Linux version must be 3.5 or later.
+          Version {{ansible_lsb.release}} detected"
 
   tasks:
-    # return code 0 means it's running
-    # return code 1 means it's not in the output of grep
-    # other return code is unknown
-    - name: Check if NTP is already in the vrf
-      shell: "vrf task list | grep ntpd"
-      register: ntp_vrf
-      failed_when: ntp_vrf.rc >= 2
-
-    - name: Configure NTP in management VRF
+    - name: Configured NTP in management VRF
       command: "{{item}}"
       with_items:
         - systemctl stop ntp.service
         - systemctl disable ntp.service
         - systemctl start ntp@mgmt
-      when: ntp_vrf.rc != 0
+      when: citc is undefined
 
     - name: Enable FRR Zebra
       lineinfile:
@@ -53,7 +99,7 @@
         dest: /etc/frr/frr.conf
         validate: vtysh -C -f %s
       notify: apply frr config
-
+      
   handlers:
     - name: restart frr service
       service:
@@ -69,76 +115,3 @@
       service:
         name: frr
         state: reloaded
-
-- hosts: servers
-  become: yes
-  tasks:
-    - name: Copy Interface Config
-      copy:
-        src: configurations/{{ansible_hostname}}/interfaces
-        dest: /etc/network/interfaces
-      register: reboot
-
-    - name: Correct LLDP Settings
-      lineinfile:
-        dest: /etc/lldpd.d/port_info.conf
-        line: "configure lldp portidsubtype ifname"
-        create: yes
-      notify: restart LLDP
-
-    - name: Apply LLDP Settings
-      meta: flush_handlers
-
-    - name: Install ifupdown2
-      apt:
-        name: ifupdown2
-        update_cache: yes
-        state: present
-
-    - name: Enable ifupdown2
-      service:
-        name: networking
-        enabled: yes
-
-    - name: Restart Rsyslog
-      service:
-        name: rsyslog
-        state: restarted
-      when: citc is undefined
-
-    - name: Enable ifupdown2 after reboot
-      lineinfile:
-        dest: "/lib/systemd/system/networking.service"
-        regexp: '^RemainAfterExit'
-        insertafter: '^\[Service\]'
-        line: 'RemainAfterExit=yes'
-
-    - name: Enable network interfaces
-      command: ifup {{item}}
-      ignore_errors: yes
-      with_items:
-        - eth1
-        - eth2
-        - lo
-
-    - name: Create FRR configuration directory
-      file:
-        path: /etc/frr
-        state: directory
-        mode: 0775
-
-    - name: Copy FRR daemons File
-      copy:
-        src: configurations/{{ansible_hostname}}/daemons
-        dest: /etc/frr/daemons
-
-    - name: Copy FRR configuration File
-      copy:
-        src: configurations/{{ansible_hostname}}/frr.conf
-        dest: /etc/frr/frr.conf
-
-  handlers:
-      - name: restart LLDP
-        service:
-          name: lldpd
-          state: restarted      

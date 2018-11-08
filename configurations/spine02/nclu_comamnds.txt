@@ -1,6 +1,7 @@
 net add vrf mgmt
 net commit
 
+net add interface swp1-4,29-32 mtu 9216
 net add interface swp31-32 alias to Spine01
 net add loopback lo ip address 10.0.0.22/32
 net add loopback lo alias loopback interface
@@ -23,3 +24,8 @@ net add bgp neighbor swp2 interface remote-as external
 net add bgp neighbor swp3 interface remote-as external
 net add bgp neighbor swp4 interface remote-as external
 net add bgp ipv4 unicast network 10.0.0.22/32
+
+net add bgp l2vpn evpn neighbor swp1 activate
+net add bgp l2vpn evpn neighbor swp2 activate
+net add bgp l2vpn evpn neighbor swp3 activate
+net add bgp l2vpn evpn neighbor swp4 activate
