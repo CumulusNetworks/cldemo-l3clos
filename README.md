@@ -1,4 +1,4 @@
-Request a "Blank Workbench" on [Cumulus in the Cloud](https://cumulusnetworks.com/try-for-free/). When you receive notice that it is provisioned, connect to the *oob-mgmt-server*
+Request a "Blank Workbench" on [Cumulus in the Cloud](https://cumulusnetworks.com/try-for-free/). When you receive notice that it is provisioned, you will be automatically connected to the *oob-mgmt-server*
 
 Once connected run
 `git clone -b citc https://github.com/CumulusNetworks/cldemo-l3clos`
