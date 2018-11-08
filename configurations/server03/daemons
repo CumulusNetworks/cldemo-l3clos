@@ -1,0 +1,13 @@
+######
+## Quagga daemons file
+## This defines which routing services to enable in Quagga
+######
+
+zebra=yes
+bgpd=yes
+ospfd=no
+ospf6d=no
+ripd=no
+ripngd=no
+isisd=no
+babeld=no

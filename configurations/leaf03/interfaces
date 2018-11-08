@@ -1,0 +1,56 @@
+#########
+## Configured by Ansible
+#########
+
+# Loopback interface
+auto lo
+iface lo inet loopback
+  address 10.0.0.13/32
+  alias loopback interface
+
+# Management interface
+auto eth0
+iface eth0 inet dhcp
+    alias management interface
+    vrf mgmt
+
+auto mgmt
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+# Port to Server03
+auto swp1
+iface swp1
+  mtu 9000
+  alias to Server03
+
+# Port to Server04
+auto swp2
+iface swp2
+  mtu 9000
+  alias to Server04
+
+# Port to Leaf04
+auto swp49
+iface swp49
+  mtu 9000
+  alias to Leaf04
+
+# Port to Leaf04
+auto swp50
+iface swp50
+  mtu 9000
+  alias to Leaf04
+
+# Port to Spine01
+auto swp51
+iface swp51
+  mtu 9000
+  alias to Spine01
+
+# Port to Spine02
+auto swp52
+iface swp52
+  mtu 9000
+  alias to Spine02
