@@ -2,8 +2,6 @@
 
 This demo sets up BGP Unnumbered to build a basic layer 3 Clos fabric using the Cumulus [reference topology](https://github.com/cumulusnetworks/cldemo-vagrant).  Please visit the reference topology github page for detailed instructions on using Cumulus Vx with Vagrant.
 
-![Cumulus Reference Topology](https://raw.githubusercontent.com/CumulusNetworks/cldemo-vagrant/master/documentation/cldemo_topology.png)
-
 _Don't want to run it locally? You can also run this demo in [Cumulus In the Cloud](https://cumulusnetworks.com/try-for-free/)_
 
 
@@ -11,7 +9,7 @@ Table of Contents
 =================
 * [Prerequisites](#prerequisites)
 * [If Using Libvirt KVM](#using-libvirtkvm)
-* [Using Cumulus in the Cloud](#using-cumulus-in-the-cloud)
+* [If Using Cumulus in the Cloud](#using-cumulus-in-the-cloud)
 * [Running the Demo](#running-the-demo)
 * [Troubleshooting + FAQ](#troubleshooting--faq)
 
@@ -30,7 +28,7 @@ If Using Libvirt+KVM
 * Rename `Vagrantfile-kvm` to `Vagrantfile` replacing the existing Vagrantfile that is used for Virtualbox.
 
 
-Using Cumulus in the Cloud
+If Using Cumulus in the Cloud
 ------------------------
 Request a "Blank Workbench" on [Cumulus in the Cloud](https://cumulusnetworks.com/try-for-free/). When you receive notice that it is provisioned, connect to the *oob-mgmt-server*
 
