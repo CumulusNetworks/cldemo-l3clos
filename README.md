@@ -1,7 +1,6 @@
 # Cumulus Layer 3 Clos Demo
 
-This demo will install Cumulus Linux [NetQ](https://docs.cumulusnetworks.com/display/NETQ) Fabric Validation System using the Cumulus [reference topology](https://github.com/cumulusnetworks/cldemo-vagrant). Please visit the reference topology github page for detailed instructions on using Cumulus Vx with Vagrant.
-
+This demo sets up BGP Unnumbered to build a basic layer 3 Clos fabric using the Cumulus [reference topology](https://github.com/cumulusnetworks/cldemo-vagrant).  Please visit the reference topology github page for detailed instructions on using Cumulus Vx with Vagrant.
 
 ![Cumulus Reference Topology](https://raw.githubusercontent.com/CumulusNetworks/cldemo-vagrant/master/documentation/cldemo_topology.png)
 
@@ -11,12 +10,9 @@ _Don't want to run it locally? You can also run this demo in [Cumulus In the Clo
 Table of Contents
 =================
 * [Prerequisites](#prerequisites)
-* [Using Virtualbox](#using-virtualbox)
-* [Using Libvirt KVM](#using-libvirtkvm)
+* [If Using Libvirt KVM](#using-libvirtkvm)
 * [Using Cumulus in the Cloud](#using-cumulus-in-the-cloud)
 * [Running the Demo](#running-the-demo)
-    * [EVPN Demo](#evpn-demo)
-    * [Docker Swarm   Routing on the Host Demo](#docker-swarm--routing-on-the-host-demo)
 * [Troubleshooting + FAQ](#troubleshooting--faq)
 
 
@@ -25,24 +21,14 @@ Prerequisites
 * Running this simulation roughly 10G of RAM.
 * Internet connectivity is required from the hypervisor. Multiple packages are installed on both the switches and servers when the lab is created.
 * Download this repository locally with `git clone https://github.com/CumulusNetworks/cldemo-netq.git` or if you do not have Git installed, [Download the zip file](https://github.com/CumulusNetworks/cldemo-netq/archive/master.zip)
-* Download the NetQ Telemetry Server from https://cumulusnetworks.com/downloads/#product=NetQ%20Virtual&hypervisor=Vagrant. You need to be logged into the site to access this.  Choose NetQ 1.4.
 * Install [Vagrant](https://releases.hashicorp.com/vagrant/).  Vagrant 2.0.1+ is needed to support VirtualBox 5.2.x
 * Install [Virtualbox](https://www.virtualbox.org/wiki/VirtualBox) or [Libvirt+KVM](https://libvirt.org/drvqemu.html) hypervisors.
 
-Using Virtualbox
-------------------------
-* Add the downloaded box to vagrant via:  
-`vagrant box add cumulus-netq-server-1.4.0-ts-amd64-vbox.box --name=cumulus/ts`  
-**Note:** You must first manually download the Telemetry Server Vagrant box file from the [Cumulus Networks Download Page](https://cumulusnetworks.com/downloads/#product=NetQ%20Virtual&hypervisor=Vagrant)
 
-Using Libvirt+KVM
+If Using Libvirt+KVM
 ------------------------
 * Rename `Vagrantfile-kvm` to `Vagrantfile` replacing the existing Vagrantfile that is used for Virtualbox.
-* Install the Vagrant mutate plugin with 
-`vagrant plugin install vagrant-mutate`
-* Add the downloaded box to vagrant via:  
-`vagrant box add cumulus-netq-server-1.4.0-ts-amd64-libvirt.box --name=cumulus/ts`  
-**Note:** You must first manually download the Telemetry Server Vagrant box file from the [Cumulus Networks Download Page](https://cumulusnetworks.com/downloads/#product=NetQ%20Virtual&hypervisor=Vagrant)
+
 
 Using Cumulus in the Cloud
 ------------------------
