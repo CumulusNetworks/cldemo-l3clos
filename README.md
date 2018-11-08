@@ -2,7 +2,7 @@
 
 This demo sets up BGP Unnumbered to build a basic layer 3 Clos fabric using the Cumulus [reference topology](https://github.com/cumulusnetworks/cldemo-vagrant).  Please visit the reference topology github page for detailed instructions on using Cumulus Vx with Vagrant if you want to run this demo locally.
 
-This is a basic layer 3 forwarding fabric that would simulate two racks.  Each rack contains a pair of leaf/ToR switches and two dual attached servers using MLAG.  BGP Unnumbered is running between the spine and leaf switches.  Each leaf advertises it's directly connected subnet into the fabric to provide full reachability between all servers.
+This is a basic layer 3 forwarding fabric that would simulate two racks.  Each rack contains a pair of leaf/ToR switches and two dual attached servers using MLAG.  BGP Unnumbered is running between the spine and leaf switches.  Each leaf advertises its directly connected subnet into the fabric to provide full reachability between all servers.
 
 ![topology](https://raw.githubusercontent.com/jubetz/cldemo-l3clos/master/images/l3-clos.png)
 
