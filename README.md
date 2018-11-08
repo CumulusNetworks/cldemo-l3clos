@@ -2,7 +2,7 @@
 
 This demo sets up BGP Unnumbered to build a basic layer 3 Clos fabric using the Cumulus [reference topology](https://github.com/cumulusnetworks/cldemo-vagrant).  Please visit the reference topology github page for detailed instructions on using Cumulus Vx with Vagrant.
 
-![topology](https://raw.githubusercontent.com/jubetz/cldemo-l3clos/master/images/clos.png)
+![topology](https://raw.githubusercontent.com/jubetz/cldemo-l3clos/master/images/l3-clos.png)
 
 _Don't want to run it locally? You can also run this demo in [Cumulus In the Cloud](https://cumulusnetworks.com/try-for-free/)_
 
