@@ -24,10 +24,6 @@
         state: restarted
       when: citc is undefined
 
-    - name: reboot
-      reboot:
-        pre_reboot_delay: 60
-
   handlers:
     - name: restart LLDP
       service:
