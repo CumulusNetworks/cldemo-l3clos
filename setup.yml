@@ -119,15 +119,6 @@
   become: yes
   tasks:
 
-    - name: Move Netqd.service to management VRF
-      command: " {{ item }}"
-      with_items:
-        - systemctl stop netqd.service
-        - systemctl disable netqd.service
-        - systemctl enable netqd@mgmt.service
-        - systemctl start netqd@mgmt.service
-      when: agents.rc != 0
-
     - name: Locate where NTP is running
       shell: ip vrf identify $(ps -u ntp | grep -v PID | awk '{print $1}')
       register: ntp_location
