@@ -22,7 +22,7 @@ Prerequisites For Running Locally
 ------------------------
 * Running this simulation roughly 10G of RAM.
 * Internet connectivity is required from the hypervisor. Multiple packages are installed on both the switches and servers when the lab is created.
-* Download this repository locally with `git clone https://github.com/CumulusNetworks/cldemo-l3clos.git` or if you do not have Git installed, [Download the zip file](https://github.com/CumulusNetworks/cldemo-netq/archive/master.zip)
+* Download this repository locally with `git clone https://github.com/CumulusNetworks/cldemo-l3clos.git` or if you do not have Git installed, [Download the zip file](https://github.com/CumulusNetworks/cldemo-l3clos/archive/master.zip)
 * Install [Vagrant](https://releases.hashicorp.com/vagrant/).  Vagrant 2.0.1+ is needed to support VirtualBox 5.2.x
 * Install [Virtualbox](https://www.virtualbox.org/wiki/VirtualBox) or [Libvirt+KVM](https://libvirt.org/drvqemu.html) hypervisors.
 
