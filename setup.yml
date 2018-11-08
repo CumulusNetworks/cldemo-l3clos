@@ -21,7 +21,7 @@
       register: clos
 
     - name: Clone Demo
-      command: git clone -b l3-clos https://github.com/jubetz/cldemo-l3clos /home/cumulus/cldemo-netq/l3-clos 
+      command: git clone -b l3-clos https://github.com/jubetz/cldemo-l3clos /home/cumulus/cldemo-l3clos/l3-clos 
       when: clos.stat.isdir is not defined
 
     - name: Create Ansible Directory
