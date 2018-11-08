@@ -1,0 +1,248 @@
+---
+- hosts: localhost
+  pre_tasks:
+    # To prevent unexpected problems, define the minimum Cumulus Linux
+    # Release supported by this demo.
+    - name: Verify Minimum Software Version
+      assert:
+        that: "{{ ansible_lsb.release is version_compare('3.4', '>=') }}"
+        msg: >
+          "You appear to be running an older workbench.
+          Please delete your current workbench by adding '/delete' to your
+          workbench URL and request a new one."
+
+
+  tasks:
+    - name: Check if the EVPN demo is already cloned
+      stat:
+        path: /home/cumulus/cldemo-netq/evpn
+        get_attributes: no
+        get_checksum: no
+        get_md5: no
+      register: evpn
+
+    - name: Check if Docker demo is already cloned
+      stat:
+        path: /home/cumulus/cldemo-netq/docker
+        get_attributes: no
+        get_checksum: no
+        get_md5: no
+      register: docker
+
+    - name: Clone EVPN Demo
+      command: git clone -b evpn https://github.com/jubetz/cldemo-netq /home/cumulus/cldemo-netq/evpn  # yamllint disable-line rule:line-length
+      when: evpn.stat.isdir is not defined
+
+    - name: Clone Docker Demo
+      command: git clone -b docker-roh https://github.com/jubetz/cldemo-netq /home/cumulus/cldemo-netq/docker  # yamllint disable-line rule:line-length
+      when: docker.stat.isdir is not defined
+
+    - name: Create Ansible Directory
+      file:
+        path: /etc/ansible
+        state: directory
+      become: yes
+
+    - name: Copy ansible.cfg
+      copy:
+        src: ansible.cfg
+        dest: /etc/ansible/ansible.cfg
+      become: yes
+
+    - name: Copy Ansible hosts
+      copy:
+        src: hosts
+        dest: /etc/ansible/hosts
+      become: yes
+      
+    - name: Restart Rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+      when: citc is undefined
+      become: yes
+
+    - name: Change NetQ IP
+      lineinfile:
+        path: /etc/netq/netq.yml
+        regexp: "^  server: 10.1.3.11"
+        line: "  server: 192.168.0.254"
+        backup: yes
+        backrefs: yes
+      become: yes
+      notify: restart ts
+
+  handlers:
+    - name: apply networking
+      command: ifreload -a
+      become: yes
+
+    - name: restart ts
+      service:
+        name: netq-appliance.service
+        state: restarted
+      become: yes
+
+- hosts: network
+  become: yes
+  tasks:
+    - name: Check if management VRF is enabled
+      command: ip vrf identify
+      register: vrf
+
+    - name: Enable management VRF
+      command: "{{ item }}"
+      with_items:
+        - net add vrf mgmt
+        - net commit
+      async: 1
+      poll: 0
+      when: vrf.stdout != "mgmt"
+      register: mgmtVRF
+
+    - name: Management VRF enabled, wait to reconnect
+      wait_for_connection:
+        timeout: 30
+        delay: 5
+      when: mgmtVRF.changed
+    
+    #update netq
+    - name: Add Cumulus Repo
+      apt_repository:
+        repo: deb http://apps3.cumulusnetworks.com/repos/deb CumulusLinux-3 netq-1.4
+        state: present
+        update_cache: yes
+        
+    #update netq
+    - name: Install cumulus-netq
+      apt:
+        name: cumulus-netq
+        state: latest
+        update_cache: yes
+      register: installNetQ
+
+- hosts: servers
+  become: yes
+  tasks:
+    - name: Add Cumulus Apt Key
+      apt_key:
+        url: "https://apps3.cumulusnetworks.com/setup/cumulus-apps-deb.pubkey"
+        state: present
+
+    # update netq
+    - name: Add Cumulus Repo
+      apt_repository:
+        repo: deb http://apps3.cumulusnetworks.com/repos/deb xenial netq-1.4
+        state: present
+        update_cache: yes
+    
+    # update netq
+    - name: Install cumulus-netq
+      apt:
+        name: cumulus-netq
+        state: latest
+        update_cache: yes
+      register: installNetQ
+
+    - name: Install LLDP
+      apt:
+        name: lldpd
+        state: present
+        update_cache: no
+      register: installLLDP
+        
+    - name: Install traceroute
+      apt:
+        name: traceroute
+        state: present
+        update_cache: no
+      register: installTraceroute
+     
+    - name: Install NTP
+      apt:
+        name: ntp
+        update_cache: no
+      register: installNTP
+
+    - name: Enable NTP
+      service:
+        name: ntp
+        enabled: yes
+        state: started
+      when: installNTP.changed
+
+    - name: Restart Rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+#      when: installNetQ.changed
+
+    - name: Start NetQ Service on Servers
+      service:
+        name: netqd
+        enabled: yes
+        state: started
+
+    - name: Add netq server IP
+      command: netq config add server 192.168.0.254
+
+    - name: Start Netq Service Again
+      command: netq config restart agent
+
+    - name: Check that the agent is running
+      command: netq agent status
+      register: status
+      failed_when: "'Stopped.' in status.stdout"
+
+    - name: Fix CITC bonds
+      blockinfile:
+        path: /etc/rc.local
+        block: |
+          /sbin/ethtool -s eth1 speed 1000 duplex full
+          /sbin/ethtool -s eth2 speed 1000 duplex full
+          systemctl restart networking
+
+- hosts: network
+  become: yes
+  tasks:
+
+    - name: Check if NetQ is configured. It is okay for this to be red (fail)
+      command: netq check agents
+      ignore_errors: true
+      register: agents
+
+    - name: Move Netqd.service to management VRF
+      command: " {{ item }}"
+      with_items:
+        - systemctl stop netqd.service
+        - systemctl disable netqd.service
+        - systemctl enable netqd@mgmt.service
+        - systemctl start netqd@mgmt.service
+      when: agents.rc != 0
+
+    - name: Configure NetQ server
+      command: netq config add server 192.168.0.254 vrf mgmt
+      when: agents.rc != 0
+
+    - name: Move NetQ agent service to Mgmt VRF
+      command: "{{ item }}"
+      with_items:
+        - systemctl stop netq-agent.service
+        - systemctl disable netq-agent.service
+        - systemctl enable netq-agent@mgmt.service
+        - systemctl start netq-agent@mgmt.service
+      when: agents.rc != 0
+
+    - name: Locate where NTP is running
+      shell: ip vrf identify $(ps -u ntp | grep -v PID | awk '{print $1}')
+      register: ntp_location
+
+    - name: Move NTP to Mgmt VRF
+      command: " {{ item }} "
+      with_items:
+        - systemctl stop ntp.service
+        - systemctl disable ntp.service
+        - systemctl start ntp@mgmt.service
+        - systemctl enable ntp@mgmt.service
+      when: ntp_location.stdout != "mgmt"
+

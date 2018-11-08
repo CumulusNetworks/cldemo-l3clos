@@ -1,0 +1,21 @@
+localhost citc=True
+
+[leafs]
+leaf04 ansible_host=192.168.0.14 ansible_user=cumulus citc=True
+leaf02 ansible_host=192.168.0.12 ansible_user=cumulus citc=True
+leaf03 ansible_host=192.168.0.13 ansible_user=cumulus citc=True
+leaf01 ansible_host=192.168.0.11 ansible_user=cumulus citc=True
+
+[spines]
+spine02 ansible_host=192.168.0.22 ansible_user=cumulus citc=True
+spine01 ansible_host=192.168.0.21 ansible_user=cumulus citc=True
+
+[servers]
+server01 ansible_host=192.168.0.31 ansible_user=cumulus citc=True
+server03 ansible_host=192.168.0.33 ansible_user=cumulus citc=True
+server02 ansible_host=192.168.0.32 ansible_user=cumulus citc=True
+server04 ansible_host=192.168.0.34 ansible_user=cumulus citc=True
+
+[network:children]
+leafs
+spines
