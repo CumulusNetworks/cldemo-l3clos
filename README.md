@@ -48,7 +48,7 @@ Next
 After Ansible finishes, a new directory gets created named, 'l3-clos'
 
 Running the Demo (Locally)
-------------------------
+--------------------------
 * `cd cldemo-l3clos`
 * `vagrant up oob-mgmt-server oob-mgmt-switch`
 * `vagrant up` (bringing up the oob-mgmt-server and switch first prevent DHCP issues)
@@ -56,6 +56,8 @@ Running the Demo (Locally)
 
 Just as described in the topology diagram above each server is configured with a /32 loopback IP and BGP ASN.
 
-**To provision this demo**, from the oob-mgmt-server 
+To Provision This demo
+-----------------------
+Once at the oob-mgmt-server
 * `cd l3-clos`
 * `ansible-playbook run_demo.yml`
