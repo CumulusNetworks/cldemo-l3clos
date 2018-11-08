@@ -11,31 +11,18 @@
           Please delete your current workbench by adding '/delete' to your
           workbench URL and request a new one."
 
-
   tasks:
-    - name: Check if the EVPN demo is already cloned
+    - name: Check if the demo is already cloned
       stat:
-        path: /home/cumulus/cldemo-netq/evpn
+        path: /home/cumulus/cldemo-netq/l3-clos
         get_attributes: no
         get_checksum: no
         get_md5: no
-      register: evpn
+      register: clos
 
-    - name: Check if Docker demo is already cloned
-      stat:
-        path: /home/cumulus/cldemo-netq/docker
-        get_attributes: no
-        get_checksum: no
-        get_md5: no
-      register: docker
-
-    - name: Clone EVPN Demo
-      command: git clone -b evpn https://github.com/jubetz/cldemo-netq /home/cumulus/cldemo-netq/evpn  # yamllint disable-line rule:line-length
-      when: evpn.stat.isdir is not defined
-
-    - name: Clone Docker Demo
-      command: git clone -b docker-roh https://github.com/jubetz/cldemo-netq /home/cumulus/cldemo-netq/docker  # yamllint disable-line rule:line-length
-      when: docker.stat.isdir is not defined
+    - name: Clone Demo
+      command: git clone -b l3-clos https://github.com/jubetz/cldemo-l3clos /home/cumulus/cldemo-netq/l3-clos 
+      when: clos.stat.isdir is not defined
 
     - name: Create Ansible Directory
       file:
@@ -55,33 +42,11 @@
         dest: /etc/ansible/hosts
       become: yes
       
-    - name: Restart Rsyslog
-      service:
-        name: rsyslog
-        state: restarted
-      when: citc is undefined
-      become: yes
-
-    - name: Change NetQ IP
-      lineinfile:
-        path: /etc/netq/netq.yml
-        regexp: "^  server: 10.1.3.11"
-        line: "  server: 192.168.0.254"
-        backup: yes
-        backrefs: yes
-      become: yes
-      notify: restart ts
-
   handlers:
     - name: apply networking
       command: ifreload -a
       become: yes
 
-    - name: restart ts
-      service:
-        name: netq-appliance.service
-        state: restarted
-      become: yes
 
 - hosts: network
   become: yes
@@ -106,43 +71,9 @@
         delay: 5
       when: mgmtVRF.changed
     
-    #update netq
-    - name: Add Cumulus Repo
-      apt_repository:
-        repo: deb http://apps3.cumulusnetworks.com/repos/deb CumulusLinux-3 netq-1.4
-        state: present
-        update_cache: yes
-        
-    #update netq
-    - name: Install cumulus-netq
-      apt:
-        name: cumulus-netq
-        state: latest
-        update_cache: yes
-      register: installNetQ
-
 - hosts: servers
   become: yes
   tasks:
-    - name: Add Cumulus Apt Key
-      apt_key:
-        url: "https://apps3.cumulusnetworks.com/setup/cumulus-apps-deb.pubkey"
-        state: present
-
-    # update netq
-    - name: Add Cumulus Repo
-      apt_repository:
-        repo: deb http://apps3.cumulusnetworks.com/repos/deb xenial netq-1.4
-        state: present
-        update_cache: yes
-    
-    # update netq
-    - name: Install cumulus-netq
-      apt:
-        name: cumulus-netq
-        state: latest
-        update_cache: yes
-      register: installNetQ
 
     - name: Install LLDP
       apt:
@@ -175,26 +106,8 @@
       service:
         name: rsyslog
         state: restarted
-#      when: installNetQ.changed
 
-    - name: Start NetQ Service on Servers
-      service:
-        name: netqd
-        enabled: yes
-        state: started
-
-    - name: Add netq server IP
-      command: netq config add server 192.168.0.254
-
-    - name: Start Netq Service Again
-      command: netq config restart agent
-
-    - name: Check that the agent is running
-      command: netq agent status
-      register: status
-      failed_when: "'Stopped.' in status.stdout"
-
-    - name: Fix CITC bonds
+    - name: Fix CITC for bonds
       blockinfile:
         path: /etc/rc.local
         block: |
@@ -206,11 +119,6 @@
   become: yes
   tasks:
 
-    - name: Check if NetQ is configured. It is okay for this to be red (fail)
-      command: netq check agents
-      ignore_errors: true
-      register: agents
-
     - name: Move Netqd.service to management VRF
       command: " {{ item }}"
       with_items:
@@ -218,19 +126,6 @@
         - systemctl disable netqd.service
         - systemctl enable netqd@mgmt.service
         - systemctl start netqd@mgmt.service
-      when: agents.rc != 0
-
-    - name: Configure NetQ server
-      command: netq config add server 192.168.0.254 vrf mgmt
-      when: agents.rc != 0
-
-    - name: Move NetQ agent service to Mgmt VRF
-      command: "{{ item }}"
-      with_items:
-        - systemctl stop netq-agent.service
-        - systemctl disable netq-agent.service
-        - systemctl enable netq-agent@mgmt.service
-        - systemctl start netq-agent@mgmt.service
       when: agents.rc != 0
 
     - name: Locate where NTP is running
