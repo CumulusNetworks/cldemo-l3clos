@@ -89,13 +89,10 @@ traceroute to 10.2.4.103 (10.2.4.103), 30 hops max, 60 byte packets
 cumulus@server01:~$
 ```
 
-Hop 1: Default GW for Vlan13 served by either *Leaf01* or *Leaf02*
-
-Hop 2: *Spine01* or *Spine02*
-
-Hop 3: *Leaf03* or *Leaf04*
-
-Hop 4: *Server03*
+Hop 1: Default GW for Vlan13 served by either *Leaf01* or *Leaf02*.
+Hop 2: *Spine01* or *Spine02*.
+Hop 3: *Leaf03* or *Leaf04*.
+Hop 4: *Server03*.
 
 Notice that even though the links do not have a unique IP address assigned, traceroute still works by replying with the loopback IP address that is unique to the node.
 
