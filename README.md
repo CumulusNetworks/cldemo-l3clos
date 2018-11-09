@@ -71,12 +71,12 @@ PLAY [servers] *****************************************************************
 TASK [Gathering Facts] ******************************************************************************************************************************
 ```
 
-Once the anisble playbook finishes, ssh into server01. Ping all of the other servers that are in the network:
+Once the anisble playbook finishes, ssh into *server01*. Ping all of the other servers that are in the network:
 * `ping 10.1.3.102`
 * `ping 10.2.4.103`
 * `ping 10.2.4.104`
 
-Traceroute to the other rack:
+Traceroute to a server in the other rack:
 * `traceroute 10.2.4.103`
 
 ```cumulus@server01:~$ traceroute 10.2.4.103
@@ -88,14 +88,14 @@ traceroute to 10.2.4.103 (10.2.4.103), 30 hops max, 60 byte packets
 cumulus@server01:~$
 ```
 
-Hop 1: Default GW for Vlan13 served by either Leaf01 or Leaf02
-Hop 2: Spine01 or Spine02
-Hop 3: Leaf03 or Leaf04
-Hop 4: Server04
+Hop 1: Default GW for Vlan13 served by either *Leaf01* or *Leaf02*
+Hop 2: *Spine01* or *Spine02*
+Hop 3: *Leaf03* or *Leaf04*
+Hop 4: *Server03*
 
 Notice that even though the links do not have a unique IP address assigned, traceroute still works by replying with the loopback IP address that is unique to the node.
 
-Exit back to *oob-mgmt-server* then ssh into leaf01.
+Exit back to *oob-mgmt-server* then ssh into *leaf01*.
 
 On leaf01, look around at your own interfaces:
 * `ip link show`
