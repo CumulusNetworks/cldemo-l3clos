@@ -64,14 +64,11 @@ Once at the *oob-mgmt-server* CLI, run the anisble-playbook named "run_demo.yml"
 
 ```
 cumulus@oob-mgmt-server:~$ cd l3-clos/
-cumulus@oob-mgmt-server:~/l3-clos$ ansi
-ansible             ansible-connection  ansible-doc         ansible-inventory   ansible-pull        ansible-vault       
-ansible-config      ansible-console     ansible-galaxy      ansible-playbook    ansible-test        
 cumulus@oob-mgmt-server:~/l3-clos$ ansible-playbook run_demo.yml 
 
-PLAY [servers] **********************************************************************************************************************************************************************************************
+PLAY [servers] ******************************************************************************************************************************
 
-TASK [Gathering Facts] **************************************************************************************************************************************************************************************
+TASK [Gathering Facts] ******************************************************************************************************************************
 ```
 
 Once the anisble playbook finishes, ssh into server01. Ping all of the other servers that are in the network:
