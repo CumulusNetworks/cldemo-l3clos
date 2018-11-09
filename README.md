@@ -63,24 +63,24 @@ Once at the oob-mgmt-server
 * `ansible-playbook run_demo.yml`
 
 Once the anisble playbook finishes, ssh to server01.  Ping all of the other servers that are in the network
-* ping 10.1.3.102
-* ping 10.2.4.103
-* ping 10.2.4.104
+* `ping 10.1.3.102`
+* `ping 10.2.4.103`
+* `ping 10.2.4.104`
 
 Traceroute to the other rack:
-* traceroute 10.2.4.103
+* `traceroute 10.2.4.103`
 
 Exit back to *oob-mgmt-server* then ssh into leaf01
 
 On leaf01, look around at your own interfaces:
-ip link show
-ip add show
+* `ip link show`
+* `ip add show`
 
 Notice that our front panel ports, named 'swpX' aren't assigned any interfaces.  This is unnumbered interfaces and BGP Unnumbered in action.
 
 Use NCLU (network command line utility) to peek at the status of BGP:
-* net show bgp
-* net show bgp sum
+* `net show bgp`
+* `net show bgp sum`
 
 Also take a look at our Netq demo: https://github.com/CumulusNetworks/cldemo-netq
 Netq provides next level visibility into the status, health and history of the forwarding fabric.
