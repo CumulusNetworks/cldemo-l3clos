@@ -1,7 +1,6 @@
 #!/bin/sh
 sudo su - cumulus -c '\
-git clone -b evpn https://github.com/CumulusNetworks/cldemo-netq/ evpn;
-git clone -b docker-roh https://github.com/CumulusNetworks/cldemo-netq/ docker; \
+git clone -b l3-clos https://github.com/CumulusNetworks/cldemo-netq/ l3-clos;
 '
 
 cat << EOT > /var/www/ztp.sh
