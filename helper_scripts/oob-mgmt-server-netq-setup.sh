@@ -1,6 +1,6 @@
 #!/bin/sh
 sudo su - cumulus -c '\
-git clone -b l3-clos https://github.com/jubetz/cldemo-l3clos/ l3-clos;
+git clone -b l3-clos https://github.com/CumulusNetworks/cldemo-l3clos/ l3-clos;
 '
 
 cat << EOT > /var/www/ztp.sh
