@@ -58,7 +58,7 @@ Just as described in the topology diagram above each server is configured with a
 
 To Provision This demo
 -----------------------
-Once at the *oob-mgmt-server* CLI, run the anisble-playbook named "run_demo.yml" to provision the network
+Once at the *oob-mgmt-server* CLI, run the anisble playbook named "run_demo.yml" to provision the network:
 * `cd l3-clos`
 * `ansible-playbook run_demo.yml`
 
