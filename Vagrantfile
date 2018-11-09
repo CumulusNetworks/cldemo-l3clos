@@ -296,9 +296,8 @@ Vagrant.configure("2") do |config|
   ##### DEFINE VM for oob-mgmt-server #####
   config.vm.define "oob-mgmt-server", primary: true do |device|
     device.vm.hostname = "oob-mgmt-server"
-    device.vm.box = "cumulus/ts"
-    #device.vm.box_version = ">=1.1.0"
-
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = "3.7.0"
 
     device.vm.provider "virtualbox" do |v|
       v.name = "#{wbid}_oob-mgmt-server"
