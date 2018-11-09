@@ -45,7 +45,7 @@ Next
 `cd cldemo-netq`  
 `ansible-playbook setup.yml`
 
-After Ansible finishes, a new directory gets created named, 'l3-clos'
+After Ansible finishes, a new directory gets created named, 'l3-clos.'
 
 Running the Demo (Locally)
 --------------------------
@@ -58,11 +58,23 @@ Just as described in the topology diagram above each server is configured with a
 
 To Provision This demo
 -----------------------
-Once at the oob-mgmt-server
+Once at the *oob-mgmt-server* CLI, run the anisble-playbook named "run_demo.yml" to provision the network
 * `cd l3-clos`
 * `ansible-playbook run_demo.yml`
 
-Once the anisble playbook finishes, ssh to server01.  Ping all of the other servers that are in the network
+```
+cumulus@oob-mgmt-server:~$ cd l3-clos/
+cumulus@oob-mgmt-server:~/l3-clos$ ansi
+ansible             ansible-connection  ansible-doc         ansible-inventory   ansible-pull        ansible-vault       
+ansible-config      ansible-console     ansible-galaxy      ansible-playbook    ansible-test        
+cumulus@oob-mgmt-server:~/l3-clos$ ansible-playbook run_demo.yml 
+
+PLAY [servers] **********************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] **************************************************************************************************************************************************************************************
+```
+
+Once the anisble playbook finishes, ssh into server01. Ping all of the other servers that are in the network:
 * `ping 10.1.3.102`
 * `ping 10.2.4.103`
 * `ping 10.2.4.104`
@@ -70,13 +82,29 @@ Once the anisble playbook finishes, ssh to server01.  Ping all of the other serv
 Traceroute to the other rack:
 * `traceroute 10.2.4.103`
 
-Exit back to *oob-mgmt-server* then ssh into leaf01
+```cumulus@server01:~$ traceroute 10.2.4.103
+traceroute to 10.2.4.103 (10.2.4.103), 30 hops max, 60 byte packets
+ 1  10.1.3.1 (10.1.3.1)  0.571 ms  0.557 ms  0.524 ms
+ 2  10.0.0.21 (10.0.0.21)  1.327 ms 10.0.0.22 (10.0.0.22)  1.254 ms  1.219 ms
+ 3  10.0.0.13 (10.0.0.13)  1.847 ms 10.0.0.14 (10.0.0.14)  1.981 ms 10.0.0.13 (10.0.0.13)  1.775 ms
+ 4  10.2.4.103 (10.2.4.103)  2.495 ms  2.422 ms  2.154 ms
+cumulus@server01:~$
+```
+
+Hop 1: Default GW for Vlan13 served by either Leaf01 or Leaf02
+Hop 2: Spine01 or Spine02
+Hop 3: Leaf03 or Leaf04
+Hop 4: Server04
+
+Notice that even though the links do not have a unique IP address assigned, traceroute still works by replying with the loopback IP address that is unique to the node.
+
+Exit back to *oob-mgmt-server* then ssh into leaf01.
 
 On leaf01, look around at your own interfaces:
 * `ip link show`
 * `ip add show`
 
-Notice that our front panel ports, named 'swpX' aren't assigned any interfaces.  This is unnumbered interfaces and BGP Unnumbered in action.
+Notice that the front panel ports, named 'swpX' aren't assigned any interface IP addresses.  This is IP unnumbered interfaces and BGP Unnumbered in action.
 
 Use NCLU (network command line utility) to peek at the status of BGP:
 * `net show bgp`
@@ -84,3 +112,5 @@ Use NCLU (network command line utility) to peek at the status of BGP:
 
 Also take a look at our Netq demo: https://github.com/CumulusNetworks/cldemo-netq
 Netq provides next level visibility into the status, health and history of the forwarding fabric.
+
+Browse around at the configurations for the servers and the network devices in the github repository.  The configuration is suprisingly simple.  This makes it trivial to automate and easy to deploy at scale.  Device configurations are under the 'l3-clos' branch of https://github.com/CumulusNetworks/cldemo-l3clos in the 'configurations' folder.
