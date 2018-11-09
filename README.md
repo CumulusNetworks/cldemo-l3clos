@@ -79,7 +79,8 @@ Once the anisble playbook finishes, ssh into *server01*. Ping all of the other s
 Traceroute to a server in the other rack:
 * `traceroute 10.2.4.103`
 
-```cumulus@server01:~$ traceroute 10.2.4.103
+```
+cumulus@server01:~$ traceroute 10.2.4.103
 traceroute to 10.2.4.103 (10.2.4.103), 30 hops max, 60 byte packets
  1  10.1.3.1 (10.1.3.1)  0.571 ms  0.557 ms  0.524 ms
  2  10.0.0.21 (10.0.0.21)  1.327 ms 10.0.0.22 (10.0.0.22)  1.254 ms  1.219 ms
